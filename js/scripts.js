@@ -91,7 +91,8 @@ $(function(){
     let qualidades = $('#qualidade div');
 
 
-    if(localStorage.getItem('quantidade') !== null){ // se ja houver um orçamento no localStorage, atualiza
+    if(localStorage.getItem('quantidade') !== null &&
+        localStorage.getItem('cor') !== null){ // se ja houver um orçamento no localStorage, atualiza
         updateOrcamento(j_quantidade, cores, golas, qualidades, j_estampa, j_embalagem);
         updateParams();
     }
@@ -108,92 +109,128 @@ $(function(){
     });
 
 
+    // update nos option-filter
+    $('.option-filter div').click(function () { // vai caminhar pelos filhos de todos os ".option-filter"
+        $(this).parent().children('div').removeClass('selected');
+        $(this).addClass('selected');
+
+        let categoria = $(this).parent().attr('id');
+        parametros_pesquisa[categoria] = $(this).attr('id');
+        writeLocalStorage();
+
+        $('#result_' + categoria).html($(this).html());
+        $('#valor-total').html(calcTotalValue().toFixed(2));
+
+        updatePicture();
+    });
+
     // update cores
-    $.each(cores, function(index, value){
-        $(this).click(function () {
-            $.each(cores, function(index, value){
-                $(value).removeClass('selected');
-            });
-            $(this).addClass('selected');
-            // console.log($(this).attr('id'));
-            parametros_pesquisa.cor = $(this).attr('id')
-            writeLocalStorage();
+    // $.each(cores, function(index, value){
+    //     $(this).click(function () {
+    //         $.each(cores, function(index, value){
+    //             $(value).removeClass('selected');
+    //         });
+    //         $(this).addClass('selected');
+    //         // console.log($(this).attr('id'));
+    //         parametros_pesquisa.cor = $(this).attr('id')
+    //         writeLocalStorage();
+    //
+    //         $('#result_cor').html($(this).html());
+    //         $('#valor-total').html(calcTotalValue().toFixed(2));
+    //
+    //         let cor = parametros_pesquisa.cor;
+    //         let gola = parametros_pesquisa.gola;
+    //         let estampa = parametros_pesquisa.estampa;
+    //         $('#foto-produto').attr('src', 'img/' + camisetas[cor][gola][estampa].foto);
+    //     });
+    // });
+    //
+    //
+    // // update gola
+    // $.each(golas, function(index, value){
+    //     $(this).click(function () {
+    //         $.each(golas, function(index, value){
+    //             $(value).removeClass('selected');
+    //         });
+    //         $(this).addClass('selected');
+    //         // console.log($(this).attr('id'));
+    //         parametros_pesquisa.gola = $(this).attr('id')
+    //         writeLocalStorage();
+    //
+    //         $('#result_gola').html($(this).html());
+    //         $('#valor-total').html(calcTotalValue().toFixed(2));
+    //         let cor = parametros_pesquisa.cor;
+    //         let gola = parametros_pesquisa.gola;
+    //         let estampa = parametros_pesquisa.estampa;
+    //         $('#foto-produto').attr('src', 'img/' + camisetas[cor][gola][estampa].foto);
+    //     });
+    // });
+    //
+    // // update qualidade
+    // $.each(qualidades, function(index, value){
+    //     $(this).click(function () {
+    //         $.each(qualidades, function(index, value){
+    //             $(value).removeClass('selected');
+    //         });
+    //         $(this).addClass('selected');
+    //         // console.log($(this).attr('id'));
+    //         parametros_pesquisa.qualidade = $(this).attr('id')
+    //         writeLocalStorage();
+    //
+    //         $('#result_qualidade').html($(this).html());
+    //         $('#valor-total').html(calcTotalValue().toFixed(2));
+    //     });
+    // });
 
-            $('#result_cor').html($(this).html());
-            $('#valor-total').html(calcTotalValue().toFixed(2));
 
-            let cor = parametros_pesquisa.cor;
-            let gola = parametros_pesquisa.gola;
-            let estampa = parametros_pesquisa.estampa;
-            $('#foto-produto').attr('src', 'img/' + camisetas[cor][gola][estampa].foto);
-        });
+    $('select').change(function () {
+        let selecionado = $(this).find(':selected').text();
+        let categoria = $(this).attr('id');
+        console.log('categoria = ' + categoria);
+        console.log('selecionado = ' + selecionado);
+
+        parametros_pesquisa[categoria] = $(this).val();
+        writeLocalStorage();
+
+        $('#result_' + categoria).html(selecionado);
+        $('#valor-total').html(calcTotalValue().toFixed(2));
+        updatePicture();
     });
-
-
-    // update gola
-    $.each(golas, function(index, value){
-        $(this).click(function () {
-            $.each(golas, function(index, value){
-                $(value).removeClass('selected');
-            });
-            $(this).addClass('selected');
-            // console.log($(this).attr('id'));
-            parametros_pesquisa.gola = $(this).attr('id')
-            writeLocalStorage();
-
-            $('#result_gola').html($(this).html());
-            $('#valor-total').html(calcTotalValue().toFixed(2));
-            let cor = parametros_pesquisa.cor;
-            let gola = parametros_pesquisa.gola;
-            let estampa = parametros_pesquisa.estampa;
-            $('#foto-produto').attr('src', 'img/' + camisetas[cor][gola][estampa].foto);
-        });
-    });
-
-    // update qualidade
-    $.each(qualidades, function(index, value){
-        $(this).click(function () {
-            $.each(qualidades, function(index, value){
-                $(value).removeClass('selected');
-            });
-            $(this).addClass('selected');
-            // console.log($(this).attr('id'));
-            parametros_pesquisa.qualidade = $(this).attr('id')
-            writeLocalStorage();
-
-            $('#result_qualidade').html($(this).html());
-            $('#valor-total').html(calcTotalValue().toFixed(2));
-        });
-    });
-
     // update estampa
-    j_estampa.change(function () {
-        let estampa_selecionada = $(this).find(':selected').text();
-        // console.log(estampa_selecionada);
-        // console.log($(this).val());
-        parametros_pesquisa.estampa = $(this).val();
-        writeLocalStorage();
-
-        $('#result_estampa').html(estampa_selecionada);
-        $('#valor-total').html(calcTotalValue().toFixed(2));
-        let cor = parametros_pesquisa.cor;
-        let gola = parametros_pesquisa.gola;
-        let estampa = parametros_pesquisa.estampa;
-        $('#foto-produto').attr('src', 'img/' + camisetas[cor][gola][estampa].foto);
-    })
-
-    j_embalagem.change(function () {
-        let embalagem_selecionada = $(this).find(':selected').text();
-        parametros_pesquisa.embalagem = $(this).val();
-        writeLocalStorage();
-
-        $('#result_embalagem').html(embalagem_selecionada);
-        $('#valor-total').html(calcTotalValue().toFixed(2));
-    })
+    // j_estampa.change(function () {
+    //     let estampa_selecionada = $(this).find(':selected').text();
+    //     // console.log(estampa_selecionada);
+    //     // console.log($(this).val());
+    //     parametros_pesquisa.estampa = $(this).val();
+    //     writeLocalStorage();
+    //
+    //     $('#result_estampa').html(estampa_selecionada);
+    //     $('#valor-total').html(calcTotalValue().toFixed(2));
+    //     let cor = parametros_pesquisa.cor;
+    //     let gola = parametros_pesquisa.gola;
+    //     let estampa = parametros_pesquisa.estampa;
+    //     $('#foto-produto').attr('src', 'img/' + camisetas[cor][gola][estampa].foto);
+    // })
+    //
+    // j_embalagem.change(function () {
+    //     let embalagem_selecionada = $(this).find(':selected').text();
+    //     parametros_pesquisa.embalagem = $(this).val();
+    //     writeLocalStorage();
+    //
+    //     $('#result_embalagem').html(embalagem_selecionada);
+    //     $('#valor-total').html(calcTotalValue().toFixed(2));
+    // })
 
     calcTotalValue();
     // Se quiser uma sugestão dos passos a seguir para a resolução, veja mais abaixo.
 
+
+    function updatePicture(){
+        let cor = parametros_pesquisa.cor;
+        let gola = parametros_pesquisa.gola;
+        let estampa = parametros_pesquisa.estampa;
+        $('#foto-produto').attr('src', 'img/' + camisetas[cor][gola][estampa].foto);
+    }
 
     function setPageValues(j_quantidade, j_estampa, j_embalagem){
         let cor_selecionada = $('#cor').find('.selected').html();
