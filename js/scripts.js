@@ -96,14 +96,12 @@ $(function(){
         updateParams();
     }
 
-
-
     setPageValues(j_quantidade, j_estampa, j_embalagem);
 
     // update qtd
     j_quantidade.change(function () {
         parametros_pesquisa.quantidade = $(this).val();
-        localStorage.setItem('quantidade', parametros_pesquisa.quantidade);
+        writeLocalStorage();
 
         $('#result_quantidade').html($(this).val());
         $('#valor-total').html(calcTotalValue().toFixed(2));
@@ -119,7 +117,8 @@ $(function(){
             $(this).addClass('selected');
             // console.log($(this).attr('id'));
             parametros_pesquisa.cor = $(this).attr('id')
-            localStorage.setItem('cor', parametros_pesquisa.cor);
+            writeLocalStorage();
+
             $('#result_cor').html($(this).html());
             $('#valor-total').html(calcTotalValue().toFixed(2));
 
@@ -140,7 +139,8 @@ $(function(){
             $(this).addClass('selected');
             // console.log($(this).attr('id'));
             parametros_pesquisa.gola = $(this).attr('id')
-            localStorage.setItem('gola', parametros_pesquisa.gola);
+            writeLocalStorage();
+
             $('#result_gola').html($(this).html());
             $('#valor-total').html(calcTotalValue().toFixed(2));
             let cor = parametros_pesquisa.cor;
@@ -159,7 +159,7 @@ $(function(){
             $(this).addClass('selected');
             // console.log($(this).attr('id'));
             parametros_pesquisa.qualidade = $(this).attr('id')
-            localStorage.setItem('qualidade', parametros_pesquisa.qualidade);
+            writeLocalStorage();
 
             $('#result_qualidade').html($(this).html());
             $('#valor-total').html(calcTotalValue().toFixed(2));
@@ -172,7 +172,7 @@ $(function(){
         // console.log(estampa_selecionada);
         // console.log($(this).val());
         parametros_pesquisa.estampa = $(this).val();
-        localStorage.setItem('estampa', parametros_pesquisa.estampa);
+        writeLocalStorage();
 
         $('#result_estampa').html(estampa_selecionada);
         $('#valor-total').html(calcTotalValue().toFixed(2));
@@ -185,7 +185,7 @@ $(function(){
     j_embalagem.change(function () {
         let embalagem_selecionada = $(this).find(':selected').text();
         parametros_pesquisa.embalagem = $(this).val();
-        localStorage.setItem('embalagem', parametros_pesquisa.embalagem);
+        writeLocalStorage();
 
         $('#result_embalagem').html(embalagem_selecionada);
         $('#valor-total').html(calcTotalValue().toFixed(2));
@@ -270,6 +270,15 @@ $(function(){
         return totalValue;
     }
 
+
+    function writeLocalStorage(){
+        localStorage.setItem('quantidade', parametros_pesquisa.quantidade);
+        localStorage.setItem('cor', parametros_pesquisa.cor);
+        localStorage.setItem('gola', parametros_pesquisa.gola);
+        localStorage.setItem('qualidade', parametros_pesquisa.qualidade);
+        localStorage.setItem('estampa', parametros_pesquisa.estampa);
+        localStorage.setItem('embalagem', parametros_pesquisa.embalagem);
+    }
     function updateOrcamento(quantidade, cores, golas, qualidades, estampa, embalagem){
 
         // settando valor determinado pelo localStorage
